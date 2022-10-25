@@ -99,11 +99,20 @@ public class HttpCrawler_WHUTeacher {
         Document document = Jsoup.parse(html);
         Elements elements = document.getElementsByTag("tr");
 //        List<Map<String, Object>> datapojo = new ArrayList<>();
-        
+     //教师名字、职称、研究方向表格
         ArrayList<String> nameList=new ArrayList<>();
         ArrayList<String> researchList = new ArrayList<>();
         ArrayList<String> positionList=new ArrayList<>();
 
+     //教师研究方向具体表格
+        ArrayList<String> AIStudyList=new ArrayList<>();
+            AIStudyList.add("人工智能研究方向老师名单");
+        ArrayList<String>  softwareStudyList= new ArrayList<>();
+            softwareStudyList.add("软件方向老师名单");
+        ArrayList<String> dataStudyList=new ArrayList<>();
+            dataStudyList.add("数据分析方向老师名单");
+        ArrayList<String> machineStudyList=new ArrayList<>();
+            machineStudyList.add("机器学习方向老师名单");
         for (Element el : elements) {
             String name = el.getElementsByClass("w1").eq(0).text();
             nameList.add(name);
@@ -111,30 +120,70 @@ public class HttpCrawler_WHUTeacher {
             positionList.add(position);
             String research = el.getElementsByClass("w5").eq(0).text();
             researchList.add(research);
+//            String[] ss=research.split(",|、");
+
+            if(research.indexOf("软件")!=-1)
+                softwareStudyList.add(name);
+            if(research.indexOf("智能")!=-1)
+                AIStudyList.add(name);
+            if(research.indexOf("数据")!=-1)
+                dataStudyList.add(name);
+            if(research.indexOf("机器学习")!=-1)
+                machineStudyList.add(name);
+
             System.out.printf("%-15s\t%-15s\t%s\n%n", name, position, research);
-            
-            
         }
         
         File file=new File ("D:\\桌面\\武汉大学计算机学院教师名单.xlsx");
         WritableWorkbook workbook=Workbook.createWorkbook(file);
-        WritableSheet sheet = workbook.createSheet("Sheet1",0);
+        WritableSheet sheet01 = workbook.createSheet("Sheet1",0);
+        WritableSheet sheet02 = workbook.createSheet("Sheet2",0);
+        sheet01.setColumnView(2,1000);
 
+        sheet02.setColumnView(0,25);
+        sheet02.setColumnView(1,25);
+        sheet02.setColumnView(2,25);
+        sheet02.setColumnView(3,25);
+
+        //建立表单
         Label label;
+
+//输出教师名单
         for(int nameIndex=0;nameIndex< nameList.size();nameIndex++){
             label=new Label(0,nameIndex+1, nameList.get(nameIndex));
-            sheet.addCell(label);
+            sheet01.addCell(label);
         }
 
         for(int positionIndex=0;positionIndex< positionList.size();positionIndex++){
             label=new Label(1,positionIndex+1, positionList.get(positionIndex));
-            sheet.addCell(label);
+            sheet01.addCell(label);
         }
 
 
         for(int researchIndex=0;researchIndex< researchList.size();researchIndex++){
             label=new Label(2,researchIndex+1, researchList.get(researchIndex));
-            sheet.addCell(label);
+            sheet01.addCell(label);
+        }
+
+//分类教师名单
+        for(int softwareIndex=0;softwareIndex< softwareStudyList.size();softwareIndex++){
+            label=new Label(0,softwareIndex+1,softwareStudyList.get(softwareIndex));
+            sheet02.addCell(label);
+        }
+
+        for(int AIIndex=0;AIIndex< AIStudyList.size();AIIndex++){
+            label=new Label(1,AIIndex+1, AIStudyList.get(AIIndex));
+            sheet02.addCell(label);
+        }
+
+        for(int dataIndex=0;dataIndex< dataStudyList.size();dataIndex++){
+            label=new Label(2,dataIndex+1, dataStudyList.get(dataIndex));
+            sheet02.addCell(label);
+        }
+
+        for(int machineIndex=0;machineIndex< machineStudyList.size();machineIndex++){
+            label=new Label(3,machineIndex+1, machineStudyList.get(machineIndex));
+            sheet02.addCell(label);
         }
 
         //写入excel表格
